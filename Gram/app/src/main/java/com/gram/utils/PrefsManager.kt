@@ -1,4 +1,4 @@
-package com.grammarfix.utils
+package com.gram.utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 class PrefsManager(context: Context) {
 
     private val prefs: SharedPreferences =
-        context.getSharedPreferences("grammarfix_prefs", Context.MODE_PRIVATE)
+        context.getSharedPreferences("gram_prefs", Context.MODE_PRIVATE)
 
     var isOverlayEnabled: Boolean
         get() = prefs.getBoolean("overlay_enabled", true)

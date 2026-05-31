@@ -17,7 +17,7 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_grammar_idle"
-            android:contentDescription="GrammarFix" />
+            android:contentDescription="Gram" />
 
     </com.google.android.material.card.MaterialCardView>
 

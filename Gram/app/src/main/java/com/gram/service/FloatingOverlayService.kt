@@ -1,4 +1,4 @@
-package com.grammarfix.service
+package com.gram.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -16,11 +16,11 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
-import com.grammarfix.R
-import com.grammarfix.api.ClaudeApiService
-import com.grammarfix.api.GrammarResult
-import com.grammarfix.ui.MainActivity
-import com.grammarfix.ui.SuggestionsBottomSheetActivity
+import com.gram.R
+import com.gram.api.ClaudeApiService
+import com.gram.api.GrammarResult
+import com.gram.ui.MainActivity
+import com.gram.ui.SuggestionsBottomSheetActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -41,7 +41,7 @@ class FloatingOverlayService : Service() {
         const val EXTRA_ORIGINAL_TEXT = "extra_original_text"
         const val EXTRA_PLATFORM = "extra_platform"
 
-        private const val NOTIFICATION_CHANNEL_ID = "grammarfix_overlay"
+        private const val NOTIFICATION_CHANNEL_ID = "gram_overlay"
         private const val NOTIFICATION_ID = 1001
         private const val DEBOUNCE_MS = 1500L
     }
@@ -236,7 +236,7 @@ class FloatingOverlayService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
-            "GrammarFix Overlay",
+            "Gram Overlay",
             NotificationManager.IMPORTANCE_LOW
         ).apply {
             description = "Keeps the grammar correction bubble active"
@@ -252,7 +252,7 @@ class FloatingOverlayService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("GrammarFix is active")
+            .setContentTitle("Gram is active")
             .setContentText("Tap to open settings")
             .setSmallIcon(R.drawable.ic_grammar_idle)
             .setContentIntent(pendingIntent)

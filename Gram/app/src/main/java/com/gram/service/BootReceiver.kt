@@ -1,9 +1,9 @@
-package com.grammarfix.service
+package com.gram.service
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.grammarfix.utils.PrefsManager
+import com.gram.utils.PrefsManager
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

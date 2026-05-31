@@ -1,4 +1,4 @@
-package com.grammarfix.ui
+package com.gram.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -10,9 +10,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.grammarfix.R
-import com.grammarfix.databinding.ActivitySuggestionsBinding
-import com.grammarfix.service.FloatingOverlayService
+import com.gram.R
+import com.gram.databinding.ActivitySuggestionsBinding
+import com.gram.service.FloatingOverlayService
 
 class SuggestionsBottomSheetActivity : AppCompatActivity() {
 
@@ -22,7 +22,7 @@ class SuggestionsBottomSheetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Transparent activity that hosts a bottom sheet
-        setTheme(R.style.Theme_GrammarFix_BottomSheet)
+        setTheme(R.style.Theme_Gram_BottomSheet)
         binding = ActivitySuggestionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -80,7 +80,7 @@ class SuggestionsBottomSheetActivity : AppCompatActivity() {
 
     private fun copyToClipboard(text: String) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("GrammarFix", text))
+        clipboard.setPrimaryClip(ClipData.newPlainText("Gram", text))
         Toast.makeText(this, "Copied to clipboard", Toast.LENGTH_SHORT).show()
     }
 }

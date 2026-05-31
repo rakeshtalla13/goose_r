@@ -34,7 +34,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GrammarFix"
+                    android:text="Gram"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
@@ -77,7 +77,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Complete setup below to activate GrammarFix"
+                    android:text="Complete setup below to activate Gram"
                     android:textColor="@color/warning_text"
                     android:textSize="13sp" />
             </LinearLayout>

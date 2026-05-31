@@ -1,4 +1,4 @@
-package com.grammarfix.service
+package com.gram.service
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent

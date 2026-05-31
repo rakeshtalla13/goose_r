@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">GrammarFix</string>
-    <string name="accessibility_service_label">GrammarFix Writing Assistant</string>
-    <string name="accessibility_service_description">GrammarFix monitors text you type in LinkedIn, X, and Instagram to provide real-time grammar corrections and AI-powered rewrites. No text is stored or shared without your action.</string>
-</resources>

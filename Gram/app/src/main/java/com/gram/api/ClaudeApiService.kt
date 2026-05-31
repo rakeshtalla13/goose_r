@@ -1,6 +1,6 @@
-package com.grammarfix.api
+package com.gram.api
 
-import com.grammarfix.BuildConfig
+import com.gram.BuildConfig
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers

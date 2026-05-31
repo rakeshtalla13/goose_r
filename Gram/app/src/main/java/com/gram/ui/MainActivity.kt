@@ -1,4 +1,4 @@
-package com.grammarfix.ui
+package com.gram.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -7,10 +7,10 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.grammarfix.R
-import com.grammarfix.databinding.ActivityMainBinding
-import com.grammarfix.service.FloatingOverlayService
-import com.grammarfix.utils.PrefsManager
+import com.gram.R
+import com.gram.databinding.ActivityMainBinding
+import com.gram.service.FloatingOverlayService
+import com.gram.utils.PrefsManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isAccessibilityEnabled(): Boolean {
-        val service = "${packageName}/com.grammarfix.service.GrammarAccessibilityService"
+        val service = "${packageName}/com.gram.service.GrammarAccessibilityService"
         return try {
             val enabled = Settings.Secure.getInt(
                 contentResolver,
