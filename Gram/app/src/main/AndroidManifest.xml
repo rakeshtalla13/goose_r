@@ -25,6 +25,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Bottom sheet for grammar suggestions, launched from the overlay bubble -->
+        <activity
+            android:name=".ui.SuggestionsBottomSheetActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Gram.BottomSheet"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Accessibility service for detecting text in other apps -->
         <service
             android:name=".service.GrammarAccessibilityService"
