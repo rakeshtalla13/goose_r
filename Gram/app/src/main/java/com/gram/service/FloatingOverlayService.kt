@@ -21,6 +21,7 @@ import com.gram.api.ClaudeApiService
 import com.gram.api.GrammarResult
 import com.gram.ui.MainActivity
 import com.gram.ui.SuggestionsBottomSheetActivity
+import com.gram.utils.SecurePrefsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -51,7 +52,9 @@ class FloatingOverlayService : Service() {
     private var bubbleParams: WindowManager.LayoutParams? = null
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private val claudeApi = ClaudeApiService()
+    private val claudeApi: ClaudeApiService by lazy {
+        ClaudeApiService(SecurePrefsManager(this).apiKey)
+    }
     private var analysisJob: Job? = null
 
     private var currentText = ""

@@ -15,8 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gram">
 
+        <!-- LoginActivity is the entry point — routes to Main if already signed in -->
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -24,6 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Bottom sheet for grammar suggestions, launched from the overlay bubble -->
         <activity

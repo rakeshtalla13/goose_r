@@ -6,24 +6,29 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.gram.R
 import com.gram.databinding.ActivityMainBinding
 import com.gram.service.FloatingOverlayService
 import com.gram.utils.PrefsManager
+import com.gram.utils.SecurePrefsManager
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var prefs: PrefsManager
+    private lateinit var securePrefs: SecurePrefsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefs = PrefsManager(this)
+        securePrefs = SecurePrefsManager(this)
 
-        setupApiKeySection()
+        showSignedInAccount()
+        setupLogout()
         setupPermissionCards()
         setupAppToggles()
         setupOverlayToggle()
@@ -34,16 +39,29 @@ class MainActivity : AppCompatActivity() {
         refreshPermissionStatus()
     }
 
-    private fun setupApiKeySection() {
-        binding.etApiKey.setText(prefs.apiKey)
-        binding.btnSaveApiKey.setOnClickListener {
-            val key = binding.etApiKey.text.toString().trim()
-            if (key.isBlank()) {
-                Toast.makeText(this, "Please enter a valid API key", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            prefs.apiKey = key
-            Toast.makeText(this, "API key saved", Toast.LENGTH_SHORT).show()
+    private fun showSignedInAccount() {
+        val key = securePrefs.apiKey
+        if (key.isNotBlank()) {
+            // Show a masked key hint, e.g. "sk-ant-…xK3F"
+            val hint = key.take(10) + "…" + key.takeLast(4)
+            binding.tvAccountHint.text = hint
+            binding.tvAccountHint.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setupLogout() {
+        binding.btnSignOut.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Sign out?")
+                .setMessage("You'll need to re-enter your API key to use Gram.")
+                .setPositiveButton("Sign out") { _, _ ->
+                    stopOverlayService()
+                    securePrefs.logout()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
     }
 
@@ -51,13 +69,9 @@ class MainActivity : AppCompatActivity() {
         binding.cardAccessibility.setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
-
         binding.cardOverlayPermission.setOnClickListener {
             startActivity(
-                Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                )
+                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
             )
         }
     }
@@ -67,12 +81,10 @@ class MainActivity : AppCompatActivity() {
         binding.switchLinkedIn.setOnCheckedChangeListener { _, checked ->
             prefs.linkedInEnabled = checked
         }
-
         binding.switchTwitter.isChecked = prefs.twitterEnabled
         binding.switchTwitter.setOnCheckedChangeListener { _, checked ->
             prefs.twitterEnabled = checked
         }
-
         binding.switchInstagram.isChecked = prefs.instagramEnabled
         binding.switchInstagram.setOnCheckedChangeListener { _, checked ->
             prefs.instagramEnabled = checked
@@ -83,11 +95,7 @@ class MainActivity : AppCompatActivity() {
         binding.switchOverlay.isChecked = prefs.isOverlayEnabled
         binding.switchOverlay.setOnCheckedChangeListener { _, checked ->
             prefs.isOverlayEnabled = checked
-            if (checked) {
-                startOverlayService()
-            } else {
-                stopOverlayService()
-            }
+            if (checked) startOverlayService() else stopOverlayService()
         }
     }
 
@@ -99,26 +107,20 @@ class MainActivity : AppCompatActivity() {
         binding.tvAccessibilityStatus.setTextColor(
             getColor(if (accessibilityEnabled) R.color.status_green else R.color.status_orange)
         )
-
         binding.tvOverlayStatus.text = if (overlayEnabled) "Enabled" else "Tap to enable"
         binding.tvOverlayStatus.setTextColor(
             getColor(if (overlayEnabled) R.color.status_green else R.color.status_orange)
         )
-
         binding.statusBanner.visibility = if (accessibilityEnabled && overlayEnabled) View.GONE else View.VISIBLE
     }
 
     private fun isAccessibilityEnabled(): Boolean {
         val service = "${packageName}/com.gram.service.GrammarAccessibilityService"
         return try {
-            val enabled = Settings.Secure.getInt(
-                contentResolver,
-                Settings.Secure.ACCESSIBILITY_ENABLED
-            )
+            val enabled = Settings.Secure.getInt(contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED)
             if (enabled == 1) {
                 val services = Settings.Secure.getString(
-                    contentResolver,
-                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                    contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
                 ) ?: ""
                 services.split(':').any { it.equals(service, ignoreCase = true) }
             } else false
@@ -130,23 +132,17 @@ class MainActivity : AppCompatActivity() {
     private fun startOverlayService() {
         if (!Settings.canDrawOverlays(this)) {
             Toast.makeText(this, "Please grant overlay permission first", Toast.LENGTH_SHORT).show()
-            startActivity(
-                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-            )
+            startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
             return
         }
-        startForegroundService(
-            Intent(this, FloatingOverlayService::class.java).apply {
-                action = FloatingOverlayService.ACTION_START
-            }
-        )
+        startForegroundService(Intent(this, FloatingOverlayService::class.java).apply {
+            action = FloatingOverlayService.ACTION_START
+        })
     }
 
     private fun stopOverlayService() {
-        startService(
-            Intent(this, FloatingOverlayService::class.java).apply {
-                action = FloatingOverlayService.ACTION_STOP
-            }
-        )
+        startService(Intent(this, FloatingOverlayService::class.java).apply {
+            action = FloatingOverlayService.ACTION_STOP
+        })
     }
 }

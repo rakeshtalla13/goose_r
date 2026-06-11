@@ -1,8 +1,6 @@
 package com.gram.api
 
-import com.gram.BuildConfig
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,7 +16,7 @@ data class GrammarResult(
     val summary: String
 )
 
-class ClaudeApiService {
+class ClaudeApiService(private val apiKey: String) {
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -28,16 +26,40 @@ class ClaudeApiService {
     private val gson = Gson()
     private val mediaType = "application/json".toMediaType()
 
+    suspend fun validateKey(): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val body = gson.toJson(
+                mapOf(
+                    "model" to "claude-haiku-4-5-20251001",
+                    "max_tokens" to 1,
+                    "messages" to listOf(mapOf("role" to "user", "content" to "Hi"))
+                )
+            )
+            val request = Request.Builder()
+                .url("https://api.anthropic.com/v1/messages")
+                .addHeader("x-api-key", apiKey)
+                .addHeader("anthropic-version", "2023-06-01")
+                .addHeader("content-type", "application/json")
+                .post(body.toRequestBody(mediaType))
+                .build()
+            val response = client.newCall(request).execute()
+            if (response.code == 401) error("Invalid API key")
+            if (!response.isSuccessful && response.code != 400) {
+                error("Error ${response.code}")
+            }
+        }
+    }
+
     suspend fun analyzeText(text: String, platform: String): Result<GrammarResult> =
         withContext(Dispatchers.IO) {
             runCatching {
                 val systemPrompt = buildSystemPrompt(platform)
-                val userPrompt = buildUserPrompt(text, platform)
-
+                val userPrompt = "Analyze and improve this $platform post:\n\n\"$text\""
                 val requestBody = buildRequestBody(systemPrompt, userPrompt)
+
                 val request = Request.Builder()
                     .url("https://api.anthropic.com/v1/messages")
-                    .addHeader("x-api-key", BuildConfig.CLAUDE_API_KEY)
+                    .addHeader("x-api-key", apiKey)
                     .addHeader("anthropic-version", "2023-06-01")
                     .addHeader("content-type", "application/json")
                     .post(requestBody.toRequestBody(mediaType))
@@ -48,8 +70,7 @@ class ClaudeApiService {
                     error("API error ${response.code}: ${response.body?.string()}")
                 }
 
-                val responseText = response.body?.string() ?: error("Empty response")
-                parseResponse(responseText, text)
+                parseResponse(response.body?.string() ?: error("Empty response"), text)
             }
         }
 
@@ -69,33 +90,25 @@ class ClaudeApiService {
         }
     """.trimIndent()
 
-    private fun buildUserPrompt(text: String, platform: String): String =
-        "Analyze and improve this $platform post:\n\n\"$text\""
-
-    private fun buildRequestBody(systemPrompt: String, userPrompt: String): String {
-        val body = mapOf(
-            "model" to "claude-sonnet-4-6",
-            "max_tokens" to 1024,
-            "system" to systemPrompt,
-            "messages" to listOf(
-                mapOf("role" to "user", "content" to userPrompt)
+    private fun buildRequestBody(systemPrompt: String, userPrompt: String): String =
+        gson.toJson(
+            mapOf(
+                "model" to "claude-sonnet-4-6",
+                "max_tokens" to 1024,
+                "system" to systemPrompt,
+                "messages" to listOf(mapOf("role" to "user", "content" to userPrompt))
             )
         )
-        return gson.toJson(body)
-    }
 
     private fun parseResponse(responseJson: String, originalText: String): GrammarResult {
         val apiResponse = gson.fromJson(responseJson, ApiResponse::class.java)
         val content = apiResponse.content.firstOrNull()?.text ?: error("No content in response")
 
-        // Extract JSON block from the response text
         val jsonStart = content.indexOf('{')
         val jsonEnd = content.lastIndexOf('}')
         if (jsonStart == -1 || jsonEnd == -1) error("No JSON in response: $content")
 
-        val jsonText = content.substring(jsonStart, jsonEnd + 1)
-        val result = gson.fromJson(jsonText, ParsedResult::class.java)
-
+        val result = gson.fromJson(content.substring(jsonStart, jsonEnd + 1), ParsedResult::class.java)
         return GrammarResult(
             correctedText = result.corrected.ifBlank { originalText },
             rewrittenText = result.rewritten.ifBlank { originalText },
@@ -104,15 +117,8 @@ class ClaudeApiService {
         )
     }
 
-    private data class ApiResponse(
-        val content: List<ContentBlock>
-    )
-
-    private data class ContentBlock(
-        val type: String,
-        val text: String
-    )
-
+    private data class ApiResponse(val content: List<ContentBlock>)
+    private data class ContentBlock(val type: String, val text: String)
     private data class ParsedResult(
         val corrected: String = "",
         val rewritten: String = "",

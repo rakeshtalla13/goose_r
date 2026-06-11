@@ -51,12 +51,26 @@
                     android:letterSpacing="-0.02" />
 
                 <TextView
+                    android:id="@+id/tvAccountHint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AI Writing Assistant"
-                    android:textSize="13sp"
-                    android:textColor="@color/text_secondary" />
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:fontFamily="monospace"
+                    android:visibility="gone" />
             </LinearLayout>
+
+            <!-- Sign out -->
+            <TextView
+                android:id="@+id/btnSignOut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign out"
+                android:textSize="13sp"
+                android:textColor="@color/brand_blue"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4dp" />
         </LinearLayout>
 
         <!-- Setup required banner -->
@@ -214,60 +228,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Section: API Key -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CLAUDE API KEY"
-            android:textSize="11sp"
-            android:textColor="@color/text_secondary"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="8dp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Enter your Anthropic API key to power grammar correction"
-                    android:textSize="13sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="12dp" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="sk-ant-..."
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_marginBottom="12dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etApiKey"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:imeOptions="actionDone" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSaveApiKey"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Save Key"
-                    app:cornerRadius="8dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <!-- Section: Supported Apps -->
         <TextView

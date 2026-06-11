@@ -12,10 +12,6 @@ class PrefsManager(context: Context) {
         get() = prefs.getBoolean("overlay_enabled", true)
         set(value) = prefs.edit().putBoolean("overlay_enabled", value).apply()
 
-    var apiKey: String
-        get() = prefs.getString("api_key", "") ?: ""
-        set(value) = prefs.edit().putString("api_key", value).apply()
-
     var linkedInEnabled: Boolean
         get() = prefs.getBoolean("linkedin_enabled", true)
         set(value) = prefs.edit().putBoolean("linkedin_enabled", value).apply()
